@@ -179,6 +179,7 @@
         eventTarget.addEventListener('open',       function(event) { self.onopen(event); });
         eventTarget.addEventListener('close',      function(event) { self.onclose(event); });
         eventTarget.addEventListener('connecting', function(event) { self.onconnecting(event); });
+        eventTarget.addEventListener('onmaxretry', function(event) { self.onmaxretry(event); });
         eventTarget.addEventListener('message',    function(event) { self.onmessage(event); });
         eventTarget.addEventListener('error',      function(event) { self.onerror(event); });
 
@@ -211,6 +212,7 @@
 
             if (reconnectAttempt) {
                 if (this.maxReconnectAttempts && this.reconnectAttempts > this.maxReconnectAttempts) {
+                    eventTarget.dispatchEvent(generateEvent('onmaxretry'));
                     return;
                 }
             } else {
@@ -258,6 +260,7 @@
                     e.code = event.code;
                     e.reason = event.reason;
                     e.wasClean = event.wasClean;
+                    e.reconnectAttempts = self.reconnectAttempts;
                     eventTarget.dispatchEvent(e);
                     if (!reconnectAttempt && !timedOut) {
                         if (self.debug || ReconnectingWebSocket.debugAll) {
@@ -345,6 +348,8 @@
     ReconnectingWebSocket.prototype.onclose = function(event) {};
     /** An event listener to be called when a connection begins being attempted. */
     ReconnectingWebSocket.prototype.onconnecting = function(event) {};
+    /** An event listener to be called when max retry attempt has exceeded. */
+    ReconnectingWebSocket.prototype.onmaxretry = function(event) {};
     /** An event listener to be called when a message is received from the server. */
     ReconnectingWebSocket.prototype.onmessage = function(event) {};
     /** An event listener to be called when an error occurs. */
