@@ -32,7 +32,7 @@ class ReconnectingWebSocket {
       throw new Error('ReconnectingWebSocket currently only supports browsers who have native WebSocket support.');
     }
     this.url = url;
-    this.readyState = WebSocket.CONNECTING;
+    this.readyState = WebSocket.CLOSED;
     this.reconnectAttempts = 0;
     this.options = Object.assign({}, settings, options);
 
@@ -139,7 +139,7 @@ class ReconnectingWebSocket {
     const debug = this.options.debug;
     switch (event) {
       case 'maxretry':
-        return this.onMaxRetry ? this.onMaxRetry(sendData) : warnMissingOnMethod(event, sendData, debug);
+        return this.onMaxRetry ? this.onMaxRetry(sendData) : warnMissingOnMethod(event, sendData, true);
       case 'connecting':
         return this.onConnecting ? this.onConnecting(sendData) : warnMissingOnMethod(event, sendData, debug);
       case 'connect-timeout':
